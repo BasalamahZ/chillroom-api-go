@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"chillroom/cache"
 	"chillroom/services"
 	"net/http"
 	"strconv"
@@ -10,26 +11,37 @@ import (
 
 type MovieController struct {
 	movieService services.MovieService
+	apiCache   cache.ApiCache
 }
 
-func NewMovieController(movieService *services.MovieService) MovieController {
+func NewMovieController(movieService *services.MovieService, cache *cache.ApiCache) MovieController {
 	return MovieController{
 		movieService: *movieService,
+		apiCache: *cache,
 	}
 }
 
 func (mc *MovieController) GetTrending(c *gin.Context) {
-	movie, err := mc.movieService.GetTrending()
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "error",
+	var movies []interface{} = mc.apiCache.Get("movies_trending")
+	if movies == nil {
+		movies, err := mc.movieService.GetTrending()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "error",
+			})
+			return
+		}
+		mc.apiCache.Set("movies_trending", movies)
+		c.JSON(http.StatusOK, gin.H{
+			"message": "success",
+			"data":    movies,
 		})
-		return
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "success",
+			"data":    movies,
+		})
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"message": "success",
-		"data":    movie,
-	})
 }
 
 func (mc *MovieController) FindByID(c *gin.Context) {
@@ -56,7 +68,7 @@ func (mc *MovieController) FindByID(c *gin.Context) {
 
 func (mc *MovieController) SearchMovie(c *gin.Context) {
 	movieName := c.Query("query")
-	movie, err := mc.movieService.SearchMovie(movieName)
+	movie, err := mc.movieService.SearchMovies(movieName)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "error",

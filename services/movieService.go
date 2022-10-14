@@ -9,7 +9,7 @@ import (
 type MovieService interface {
 	GetTrending() ([]interface{}, error)
 	FindByID(movieID int) (*tmdb.Movie, error)
-	SearchMovie(movieName string) (*tmdb.MovieSearchResults, error)
+	SearchMovies(movieName string) (*tmdb.MovieSearchResults, error)
 }
 
 type movieService struct {
@@ -48,8 +48,8 @@ func (*movieService) FindByID(movieID int) (*tmdb.Movie, error) {
 	return movie, nil
 }
 
-// SearchMovie implements MovieService
-func (*movieService) SearchMovie(movieName string) (*tmdb.MovieSearchResults, error) {
+// SearchMovies implements MovieService
+func (*movieService) SearchMovies(movieName string) (*tmdb.MovieSearchResults, error) {
 	var options = make(map[string]string)
 	options["language"] = "id"
 	movie, err := configs.MovieConfig().SearchMovie(movieName, options)

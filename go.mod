@@ -8,7 +8,9 @@ require (
 	github.com/Henry-Sarabia/igdb/v2 v2.0.0-alpha.4 // indirect
 	github.com/Henry-Sarabia/sliceconv v1.0.2 // indirect
 	github.com/Rambatino/CompileDaemon v1.6.0 // indirect
+	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/cyruzin/golang-tmdb v1.4.4 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dimuska139/rawg-sdk-go v1.0.1 // indirect
 	github.com/fatih/color v1.9.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
@@ -18,6 +20,7 @@ require (
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.11.1 // indirect
+	github.com/go-redis/redis/v9 v9.0.0-beta.3 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/goccy/go-json v0.9.7 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect

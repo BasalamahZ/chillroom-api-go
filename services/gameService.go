@@ -1,7 +1,7 @@
 package services
 
 import (
-	"os"
+	"chillroom/configs"
 	"time"
 
 	"github.com/Henry-Sarabia/igdb/v2"
@@ -9,6 +9,8 @@ import (
 
 type GameService interface {
 	GetTrending() ([]interface{}, error)
+	FindByID(gameID int) ([]interface{}, error)
+	SearchGames(gameName string) ([]interface{}, error)
 }
 
 type gameService struct {
@@ -16,21 +18,20 @@ type gameService struct {
 
 // GetTrending implements GameService
 func (*gameService) GetTrending() ([]interface{}, error) {
-	client := igdb.NewClient(os.Getenv("TWITCH_CLIENT_ID"), os.Getenv("ACCESS_TOKEN"), nil)
-	byPop := igdb.ComposeOptions(
+	opts := igdb.ComposeOptions(
 		igdb.SetLimit(50),
 		igdb.SetFields("*"),
 		igdb.SetOrder("hypes", igdb.OrderDescending),
 		igdb.SetFilter("first_release_date", igdb.OpGreaterThan, "1658188700"),
 		igdb.SetFilter("rating", igdb.OpGreaterThan, "75"),
 	)
-	games, err := client.Games.Index(byPop)
+	games, err := configs.GameConfig().Games.Index(opts)
 	var result []interface{}
 	if err != nil {
 		return result, err
 	}
 	for _, item := range games {
-		cover, err := client.Covers.Get(item.Cover, igdb.SetFields("image_id"))
+		cover, err := configs.GameConfig().Covers.Get(item.Cover, igdb.SetFields("image_id"))
 		if err != nil {
 			return result, err
 		}
@@ -51,6 +52,34 @@ func (*gameService) GetTrending() ([]interface{}, error) {
 		result = append(result, data)
 	}
 
+	return result, nil
+}
+
+// FindByID implements GameService
+func (*gameService) FindByID(gameID int) ([]interface{}, error) {
+	games, err := configs.GameConfig().Games.Get(
+		gameID,
+		igdb.SetFields("*"),
+	)
+	var result []interface{}
+	if err != nil {
+		return result, err
+	}
+	result = append(result, games)
+	return result, nil
+}
+
+// SearchGames implements GameService
+func (*gameService) SearchGames(gameName string) ([]interface{}, error) {
+	games, err := configs.GameConfig().Games.Search(
+		gameName,
+		igdb.SetFields("*"),
+	)
+	var result []interface{}
+	if err != nil {
+		return result, err
+	}
+	result = append(result, games)
 	return result, nil
 }
 
